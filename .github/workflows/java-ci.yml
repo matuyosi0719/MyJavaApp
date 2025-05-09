@@ -1,0 +1,26 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ "main" ]  # mainブランチにpushされた場合
+  pull_request:
+    branches: [ "main" ]  # mainブランチへのPRの場合
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Ubuntu環境で実行
+
+    steps:
+    - name: ソースコードをチェックアウト
+      uses: actions/checkout@v3  # リポジトリをチェックアウト
+
+    - name: JDKのセットアップ
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'  # 使用するJDKのバージョン（Java 17を使用）
+        distribution: 'temurin'  # Temurin JDKを使用
+
+    - name: Javaファイルのコンパイルと実行
+      run: |
+        javac src/Main.java  # ソースコードをコンパイル
+        java -cp src Main     # コンパイルしたコードを実行
