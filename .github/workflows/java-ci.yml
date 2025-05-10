@@ -1,26 +1,26 @@
-name: Java CI
+name: Java CI with JUnit
 
-on:
-  push:
-    branches: [ "main" ]  # mainブランチにpushされた場合
-  pull_request:
-    branches: [ "main" ]  # mainブランチへのPRの場合
+on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Ubuntu環境で実行
+    runs-on: ubuntu-latest
 
     steps:
-    - name: ソースコードをチェックアウト
-      uses: actions/checkout@v3  # リポジトリをチェックアウト
+    # リポジトリのコードをチェックアウト
+    - uses: actions/checkout@v3
 
-    - name: JDKのセットアップ
+    # JDKをセットアップ（Java 17）
+    - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '17'  # 使用するJDKのバージョン（Java 17を使用）
-        distribution: 'temurin'  # Temurin JDKを使用
+        java-version: '17'
+        distribution: 'temurin'
 
-    - name: Javaファイルのコンパイルと実行
-      run: |
-        javac src/Main.java  # ソースコードをコンパイル
-        java -cp src Main     # コンパイルしたコードを実行
+    # ソースコードをコンパイル
+    - name: Compile Java
+      run: javac -d out -cp .:junit-4.13.2.jar:hamcrest-core-1.3.jar src/Main.java test/MainTest.java
+
+    # JUnitテストを実行
+    - name: Run Tests
+      run: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore MainTest
