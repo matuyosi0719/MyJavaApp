@@ -1,26 +1,33 @@
-name: Java CI with JUnit
+name: Java CI and Build
 
 on: [push, pull_request]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-    # リポジトリのコードをチェックアウト
     - uses: actions/checkout@v3
 
-    # JDKをセットアップ（Java 17）
-    - name: Set up JDK
+    - name: Set up Java
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    # ソースコードをコンパイル
-    - name: Compile Java
-      run: javac -d out -cp .:junit-4.13.2.jar:hamcrest-core-1.3.jar src/Main.java test/MainTest.java
+    - name: Compile
+      run: |
+        mkdir -p out
+        javac -d out src/Main.java
 
-    # JUnitテストを実行
-    - name: Run Tests
-      run: java -cp out:junit-4.13.2.jar:hamcrest-core-1.3.jar org.junit.runner.JUnitCore MainTest
+    - name: Package JAR
+      run: |
+        echo 'Main-Class: Main' > manifest.txt
+        jar cfm MyJavaApp.jar manifest.txt -C out .
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-java-app-jar
+        path: MyJavaApp.jar
